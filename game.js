@@ -1,7 +1,9 @@
 const canvas = document.getElementById("Canvas");
 
+let Player;
+
 if (canvas.getContext) {
-    MainLoop();
+    MainLoop(Player);
 } else {
     alert("Context didnt work :(");
 }
@@ -9,18 +11,74 @@ async function MainLoop() {
     const ctx = canvas.getContext("2d");
     const RefreshRate = 10;
 
-    const Player = new PlayerObj(500, 400, [[1,0],[1,-2.5],[1,2.5]], 20, "yellow", 1, RefreshRate/20, RefreshRate/10, 1, 100, 5, 10, 10, 100);
-    const CircleTest = new CircleObj(400,400,100,"green");
+    Player = new PlayerObj(500, 400, [[1,2.5],[0.5,2],[1,1],[0.4,0.5],[1,0],[0.4,-0.5],[1,-1],[0.5,-2],[1,-2.5]], 20, "#00ff00", 0.5, 1, RefreshRate/20, RefreshRate/10, 1, 100, RefreshRate/2, 5, 1, 200, 0);
 
-    let Bullets = {};
+    let Bullets = [];
+    let Enemies = [];
     let keyboard = [false,false,false,false,false];
     let GameSpeed = 1;
+    let SpawnRateMax = 5;
+    let SpawnAmount = 1;
+    let SpawnRate = 0;
     KeyboardInput(keyboard);
     while (true) {
         UpdateBg();
+
+        if (SpawnRate <= 0) {
+            let temp1 = Math.floor(-SpawnRate / SpawnRateMax);
+            temp1 = (temp1 + 1) * SpawnAmount;
+            SpawnRate = SpawnRateMax -SpawnRate % SpawnRateMax;
+            console.log(temp1);
+            for (n = 0; n < temp1; n ++) {
+                const TempRandom = Math.random();
+                let XY = [0,0];
+                switch(Math.floor(TempRandom * 4)) {
+                    case 0:
+                        XY[0] = 0;
+                        XY[1] = Math.random() * 500;
+                        break;
+                    case 1:
+                        XY[0] = Math.random() * 1000;
+                        XY[1] = 0;
+                        break;
+                    case 2:
+                        XY[0] = 1000;
+                        XY[1] = Math.random() * 500;
+                        break;
+                    case 3:
+                        XY[0] = Math.random() * 1000;
+                        XY[1] = 800;
+                        break;
+                    default:
+                        console.log(Math.floor(TempRandom * 4));
+                        break;
+                }
+                let Enemy = new EnemyObj(XY[0],XY[1],[[0.5, Math.PI],[2, 3 * Math.PI / 4],[1, Math.PI],[1, 0]], 10, "Green", 1, 0, RefreshRate/20, 1, 2);
+                Enemies.push(Enemy);
+            }
+        } else {
+            SpawnRate -= RefreshRate / 1000 * GameSpeed;
+        }
+
+        for (i = 0; i < Enemies.length; i ++) {
+            if (Enemies[i].Tick(GameSpeed, RefreshRate, Player)) {
+                Enemies.splice(i,1);
+            } else {
+                Enemies[i].GetShape(ctx);
+            }
+        }
+
+        for (i = 0; i < Bullets.length; i ++) {
+            if (Bullets[i].Tick(GameSpeed)) {
+                Bullets.splice(i,1);
+            } else {
+                Bullets[i].GetShape(ctx);
+            }
+        }
         Player.GetShape(ctx);
         Player.Tick(GameSpeed, RefreshRate);
         PlayerUpdate(keyboard, Player, GameSpeed, Bullets);
+
         await sleep(RefreshRate);
     }
 
@@ -33,10 +91,16 @@ async function MainLoop() {
         ctx.fill();
     }
 }
+document.getElementById("PlayerColor").addEventListener("input", function() {
+    Player.Color = this.value;
+})
+function checkedEl(check){
+    WeirdMode = check.checked;
+}
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-function PlayerUpdate(keyboard, Player, GameSpeed) {
+function PlayerUpdate(keyboard, Player, GameSpeed, Bullets) {
     if (keyboard[0]) {
         Player.dir += Player.TurnSpeed / 20 * GameSpeed;
     }
@@ -52,8 +116,10 @@ function PlayerUpdate(keyboard, Player, GameSpeed) {
         Player.y -= Math.cos(Player.dir) * Player.MoveSpeed / 2 * GameSpeed;
     }
     if (keyboard[4]) {
-        if (Player.Shoot()){
-            Bullets.push();
+        const BulletsShot = Player.Shoot()
+        for (n = 0; n < BulletsShot; n ++) {
+            const Bullet = new BulletObj(Player.x, Player.y, Player.BulletSize, "yellow", Player.dir, Player.BulletSpeed, Player.Range, Player.Spread);
+            Bullets.push(Bullet);
         }
     }
 }

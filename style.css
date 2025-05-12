@@ -6,7 +6,38 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-body div {
+body .PopUp {
+  position: absolute;
+  width: 90vw;
+  height: 80vh;
+  padding: 10vh 10vh;
+  background-color: rgba(0, 0, 0, 0.2666666667);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+body .PopUp .selector {
+  height: unset;
+  width: unset;
+}
+body .PopUp .cards {
+  background-color: rgba(0, 0, 0, 0.2666666667);
+  width: 60vw;
+  height: 400px;
+  overflow-y: scroll;
+  flex-direction: row;
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+body .PopUp .cards .Card {
+  background-color: black;
+  width: 200px;
+  height: 300px;
+}
+body .Main {
   background-color: rgb(153, 197, 152);
   width: 80vw;
   height: 100vh;
@@ -14,10 +45,22 @@ body div {
   overflow-y: scroll;
   scrollbar-color: rgb(153, 197, 152) rgb(117, 151, 117);
   display: flex;
+  flex-shrink: 0;
+  gap: 10px;
   flex-direction: column;
   align-items: center;
 }
-body div h1 {
+body .Main .Top {
+  width: 100%;
+  box-shadow: none;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+body .Main .Top h1 {
   text-align: center;
   font-family: "Blaka Ink", system-ui;
   font-weight: 400;
@@ -25,8 +68,14 @@ body div h1 {
   font-size: 5rem;
   margin: 10px 0 10px;
 }
-body div canvas {
+body .Main canvas {
   width: 1000px;
   height: 800px;
   border: 2px solid black;
+}
+body .Main .Bottom {
+  width: 90%;
+}
+body .Main .Bottom p {
+  margin: 0;
 }/*# sourceMappingURL=style.css.map */
