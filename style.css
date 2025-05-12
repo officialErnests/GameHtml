@@ -6,36 +6,9 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-body .PopUp {
-  position: absolute;
-  width: 90vw;
-  height: 80vh;
-  padding: 10vh 10vh;
-  background-color: rgba(0, 0, 0, 0.2666666667);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-body .PopUp .selector {
-  height: unset;
-  width: unset;
-}
-body .PopUp .cards {
-  background-color: rgba(0, 0, 0, 0.2666666667);
-  width: 60vw;
-  height: 400px;
-  overflow-y: scroll;
-  flex-direction: row;
-  display: flex;
-  gap: 20px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-body .PopUp .cards .Card {
-  background-color: black;
-  width: 200px;
-  height: 300px;
+body .Hidden {
+  display: none;
+  visibility: hidden;
 }
 body .Main {
   background-color: rgb(153, 197, 152);
@@ -52,6 +25,7 @@ body .Main {
 }
 body .Main .Top {
   width: 100%;
+  flex-shrink: 0;
   box-shadow: none;
   overflow-y: hidden;
   display: flex;
@@ -68,14 +42,48 @@ body .Main .Top h1 {
   font-size: 5rem;
   margin: 10px 0 10px;
 }
-body .Main canvas {
+body .Main .canvasHolder {
+  position: relative;
+}
+body .Main .canvasHolder .PopUp {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 800px;
+  background-color: rgba(0, 0, 0, 0.2666666667);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+body .Main .canvasHolder .PopUp .selector {
+  height: unset;
+  width: unset;
+}
+body .Main .canvasHolder .PopUp .cards {
+  background-color: rgba(0, 0, 0, 0.2666666667);
+  width: 700px;
+  height: 400px;
+  overflow-y: scroll;
+  flex-direction: row;
+  display: flex;
+  gap: 20px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+body .Main .canvasHolder .PopUp .cards .Card {
+  background-color: black;
+  width: 200px;
+  height: 300px;
+}
+body .Main .canvasHolder canvas {
   width: 1000px;
   height: 800px;
   border: 2px solid black;
 }
 body .Main .Bottom {
   width: 90%;
-}
-body .Main .Bottom p {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
 }/*# sourceMappingURL=style.css.map */

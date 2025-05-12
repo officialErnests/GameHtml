@@ -10,27 +10,36 @@
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Blaka+Ink&family=Fredoka:wght@700&family=Josefin+Sans:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="PopUp">
-        <div class="selector">
-            <h1>Choose ability:</h1>
-            <div class="cards">
-                <div class="Card"></div>
-                <div class="Card"></div>
-                <div class="Card"></div>
-            </div>
-            <button>Reroll</button>
-        </div>
-    </div>
     <div class="Main">
         <div class="Top">
             <h1>ZDays</h1>
             <p>
                 Hp: 100/100<br>
-                Money: 1
+                Money: 1<br>
+                Exp: 0/100
             </p>
         </div>
-        <canvas id="Canvas" width="1000" height="800"></canvas>
+        <div class="canvasHolder">
+            <div class="PopUp Hidden">
+                <div class="selector Hidden">
+                    <h1>Choose ability:</h1>
+                    <div class="cards">
+                        <div class="Card"></div>
+                        <div class="Card"></div>
+                        <div class="Card"></div>
+                    </div>
+                    <button>Reroll</button>
+                </div>
+            </div>
+            <canvas id="Canvas" width="1000" height="800"></canvas>
+        </div>
         <div class="Bottom">
+            <p>
+                Controlls: <br>
+                    arrows - move <br>
+                    shift - shoot <br>
+                    p - pause <br>
+            </p>
             <span>
                 <input type="color" name="Players color" id="PlayerColor">
                 Player color
@@ -39,8 +48,15 @@
                 <input type="checkbox" id="WeirdMode" name="Weird mode" onchange="checkedEl(this)">
                 Weird mode
             </span>
+            <span>
+                <button onclick="CustomModule">Apply</button>
+                <input type="input" id="CustomName" name="Weird mode">
+                <input type="input" id="CustomModel" name="Weird mode">
+                Custom models
+            </span>
         </div>
     </div>
+    <script src="Sprites.js"></script>
     <script src="Classes.js"></script>
     <script src="game.js"></script>
 </body>

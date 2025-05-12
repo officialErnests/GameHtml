@@ -1,4 +1,6 @@
 let WeirdMode = false;
+const GridSize = 50;
+let Grid = [[[[]]]];
 class Obj {
     constructor(XPos, YPos, Shape, Size, Color) {
         this.x = XPos;
@@ -103,7 +105,7 @@ class PlayerObj extends Entinty {
     }
 }
 class EnemyObj extends Entinty {
-    constructor(XPos, YPos, Shape, Size, Color, Delay, TurnSpeed, MoveSpeed, Dmg, Hp, Value) {
+    constructor(XPos, YPos, Shape, Size, Color, Delay, TurnSpeed, MoveSpeed, Dmg, Hp, Value, Grid) {
         super(XPos, YPos, Shape, Size, Color, TurnSpeed, MoveSpeed, Dmg, Hp);
         this.Delay = Delay;
         this.MaxDelay = Delay;
@@ -112,8 +114,10 @@ class EnemyObj extends Entinty {
         this.Dmg = Dmg;
         this.Hp = Hp;
         this.Value = Value;
+        this.PrevGrid = [this.x / GridSize, this.y / GridSize];
+        // Grid[this.x / GridSize][this.y / GridSize].push(this);
     }
-    Tick(GameSpeed, RefreshRate, Player) {
+    Tick(GameSpeed, RefreshRate, Player, Grid) {
         if (this.Hp <= 0) {
             return true;
         }
@@ -124,10 +128,13 @@ class EnemyObj extends Entinty {
             this.Delay = this.MaxDelay;
             Player.Hp -= this.Dmg;
         }
-        const normalized = (Player.x - this.x + Player.y - this.y);
         this.dir = Math.atan2((Player.x - this.x), (Player.y - this.y))
         this.x += Math.sin(this.dir) * this.MoveSpeed * GameSpeed;
         this.y += Math.cos(this.dir) * this.MoveSpeed * GameSpeed;
+        // if (this.PrevGrid[0] != this.x / GridSize || this.PrevGrid[1] != this.y / GridSize) {
+        //     Grid[this.PrevGrid[0]][this.PrevGrid[1]].splice(Grid[this.PrevGrid[0]][this.PrevGrid[1]].indexOf(this), 1);
+        //     Grid[this.x / GridSize][this.y / GridSize].push(this);
+        // }
     }
 }
 class CircleObj {

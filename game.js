@@ -10,8 +10,10 @@ if (canvas.getContext) {
 async function MainLoop() {
     const ctx = canvas.getContext("2d");
     const RefreshRate = 10;
-
-    Player = new PlayerObj(500, 400, [[1,2.5],[0.5,2],[1,1],[0.4,0.5],[1,0],[0.4,-0.5],[1,-1],[0.5,-2],[1,-2.5]], 20, "#00ff00", 0.5, 1, RefreshRate/20, RefreshRate/10, 1, 100, RefreshRate/2, 5, 1, 200, 0);
+    
+    Player = new PlayerObj(500, 400, SpriteSheet["Player"], 20, "#00ff00", 0.5, 1, RefreshRate/20, RefreshRate/10, 1, 100, RefreshRate/2, 5, 1, 200, 0);
+    const PausedSprite = new Obj(500, 400, SpriteSheet["Pause"], 20, "#ffffff");
+    PausedSprite.dir = Math.PI / 2
 
     let Bullets = [];
     let Enemies = [];
@@ -20,15 +22,17 @@ async function MainLoop() {
     let SpawnRateMax = 5;
     let SpawnAmount = 1;
     let SpawnRate = 0;
-    KeyboardInput(keyboard);
+    let Paused = [true, false, 0];
+    KeyboardInput(keyboard, Paused);
     while (true) {
         UpdateBg();
+        // console.log(Paused);
 
         if (SpawnRate <= 0) {
             let temp1 = Math.floor(-SpawnRate / SpawnRateMax);
             temp1 = (temp1 + 1) * SpawnAmount;
             SpawnRate = SpawnRateMax -SpawnRate % SpawnRateMax;
-            console.log(temp1);
+            // console.log(temp1);
             for (n = 0; n < temp1; n ++) {
                 const TempRandom = Math.random();
                 let XY = [0,0];
@@ -53,7 +57,7 @@ async function MainLoop() {
                         console.log(Math.floor(TempRandom * 4));
                         break;
                 }
-                let Enemy = new EnemyObj(XY[0],XY[1],[[0.5, Math.PI],[2, 3 * Math.PI / 4],[1, Math.PI],[1, 0]], 10, "Green", 1, 0, RefreshRate/20, 1, 2);
+                let Enemy = new EnemyObj(XY[0],XY[1],SpriteSheet["Enemy1"], 10, "Green", 1, 0, RefreshRate/20, 1, 2, Grid);
                 Enemies.push(Enemy);
             }
         } else {
@@ -61,7 +65,7 @@ async function MainLoop() {
         }
 
         for (i = 0; i < Enemies.length; i ++) {
-            if (Enemies[i].Tick(GameSpeed, RefreshRate, Player)) {
+            if (Enemies[i].Tick(GameSpeed, RefreshRate, Player, Grid)) {
                 Enemies.splice(i,1);
             } else {
                 Enemies[i].GetShape(ctx);
@@ -78,6 +82,17 @@ async function MainLoop() {
         Player.GetShape(ctx);
         Player.Tick(GameSpeed, RefreshRate);
         PlayerUpdate(keyboard, Player, GameSpeed, Bullets);
+        if (Paused[0]) {
+            if (!Paused[1]){
+                Paused[2] = GameSpeed;
+                GameSpeed = 0;
+                Paused[1] = true;
+            }
+            PausedSprite.GetShape(ctx);
+        } else if (!Paused[0] && Paused[1]) {
+            Paused[1] = false;
+            GameSpeed = Paused[2];
+        }
 
         await sleep(RefreshRate);
     }
@@ -123,7 +138,8 @@ function PlayerUpdate(keyboard, Player, GameSpeed, Bullets) {
         }
     }
 }
-function KeyboardInput(keyboard) {
+function KeyboardInput(keyboard,Paused) {
+    let KeyboardDebounce = [false];
     document.addEventListener('keydown', function (event) {
         if (event.key == "ArrowLeft") {
             keyboard[0] = true;
@@ -139,6 +155,13 @@ function KeyboardInput(keyboard) {
         }
         else if (event.key == "Shift") {
             keyboard[4] = true;
+        }
+        else if (event.key == "p") {
+            if (!KeyboardDebounce[0]){
+                Paused[0] = !Paused[0];
+                console.log(Paused);
+                KeyboardDebounce[0] = true;
+            }
         }
     });
     document.addEventListener('keyup', function (event) {
@@ -157,5 +180,13 @@ function KeyboardInput(keyboard) {
         else if (event.key == "Shift") {
             keyboard[4] = false;
         }
+        else if (event.key == "p") {
+            KeyboardDebounce[0] = false;
+        }
     });
 }
+window.addEventListener("keydown", function(e) {
+    if(["ArrowUp","ArrowDown"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);
