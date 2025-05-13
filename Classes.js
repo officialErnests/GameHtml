@@ -1,6 +1,7 @@
 let WeirdMode = false;
 const GridSize = 50;
-let Grid = [[[[]]]];
+let Grid = new Array(Math.ceil(1000/GridSize)+1).fill().map(() => new Array(800/GridSize+1).fill([]));
+// console.log(Grid);
 class Obj {
     constructor(XPos, YPos, Shape, Size, Color) {
         this.x = XPos;
@@ -114,8 +115,16 @@ class EnemyObj extends Entinty {
         this.Dmg = Dmg;
         this.Hp = Hp;
         this.Value = Value;
-        this.PrevGrid = [this.x / GridSize, this.y / GridSize];
-        // Grid[this.x / GridSize][this.y / GridSize].push(this);
+        // this.PrevGrid = [Math.floor(this.x / GridSize), Math.floor(this.y / GridSize)];
+        // console.log(Math.floor(this.x / GridSize));
+        // console.log(Grid[Math.floor(this.x / GridSize)]);
+        // console.log(Math.floor(this.y / GridSize));
+        // console.log(Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)])
+        // console.log(Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)]);
+        // Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)].push(this);
+        // console.log(Grid);
+        // console.log(Grid[Math.floor(this.x / GridSize)]);
+        
     }
     Tick(GameSpeed, RefreshRate, Player, Grid) {
         if (this.Hp <= 0) {
@@ -131,10 +140,14 @@ class EnemyObj extends Entinty {
         this.dir = Math.atan2((Player.x - this.x), (Player.y - this.y))
         this.x += Math.sin(this.dir) * this.MoveSpeed * GameSpeed;
         this.y += Math.cos(this.dir) * this.MoveSpeed * GameSpeed;
-        // if (this.PrevGrid[0] != this.x / GridSize || this.PrevGrid[1] != this.y / GridSize) {
-        //     Grid[this.PrevGrid[0]][this.PrevGrid[1]].splice(Grid[this.PrevGrid[0]][this.PrevGrid[1]].indexOf(this), 1);
-        //     Grid[this.x / GridSize][this.y / GridSize].push(this);
-        // }
+        if (this.PrevGrid[0] != Math.floor(this.x / GridSize) || this.PrevGrid[1] != Math.floor(this.y / GridSize)) {
+            // console.log(`${this.PrevGrid[0]},${this.PrevGrid[1]} => ${Math.floor(this.x / GridSize)},${Math.floor(this.y / GridSize)}`);
+            console.log("A")
+            Grid[this.PrevGrid[0]][this.PrevGrid[1]].splice(Grid[this.PrevGrid[0]][this.PrevGrid[1]].indexOf(this), 1);
+            Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)].push(this);
+            this.PrevGrid[0] = Math.floor(this.x / GridSize);
+            this.PrevGrid[1] = Math.floor(this.y / GridSize);
+        }
     }
 }
 class CircleObj {

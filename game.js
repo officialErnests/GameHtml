@@ -39,7 +39,7 @@ async function MainLoop() {
                 switch(Math.floor(TempRandom * 4)) {
                     case 0:
                         XY[0] = 0;
-                        XY[1] = Math.random() * 500;
+                        XY[1] = Math.random() * 800;
                         break;
                     case 1:
                         XY[0] = Math.random() * 1000;
@@ -47,7 +47,7 @@ async function MainLoop() {
                         break;
                     case 2:
                         XY[0] = 1000;
-                        XY[1] = Math.random() * 500;
+                        XY[1] = Math.random() * 800;
                         break;
                     case 3:
                         XY[0] = Math.random() * 1000;
@@ -57,7 +57,8 @@ async function MainLoop() {
                         console.log(Math.floor(TempRandom * 4));
                         break;
                 }
-                let Enemy = new EnemyObj(XY[0],XY[1],SpriteSheet["Enemy1"], 10, "Green", 1, 0, RefreshRate/20, 1, 2, Grid);
+                // console.log(Grid);
+                let Enemy = new EnemyObj(XY[0],XY[1],SpriteSheet["Enemy1"], 10, "Green", 1, 0, RefreshRate/20, 1, 2, 1, Grid);
                 Enemies.push(Enemy);
             }
         } else {
