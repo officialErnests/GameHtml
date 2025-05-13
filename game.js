@@ -11,7 +11,7 @@ async function MainLoop() {
     const ctx = canvas.getContext("2d");
     const RefreshRate = 10;
     
-    Player = new PlayerObj(500, 400, SpriteSheet["Player"], 20, "#00ff00", 0.5, 1, RefreshRate/20, RefreshRate/10, 1, 100, RefreshRate/2, 5, 1, 200, 0);
+    Player = new PlayerObj(500, 400, SpriteSheet["Player"], 20, "#00ff00", 0.5, 1, RefreshRate/20, RefreshRate/10, 1, 100, RefreshRate/2, 5, 1, 200, 0, 10, 1);
     const PausedSprite = new Obj(500, 400, SpriteSheet["Pause"], 20, "#ffffff");
     PausedSprite.dir = Math.PI / 2
 
@@ -23,11 +23,22 @@ async function MainLoop() {
     let SpawnAmount = 1;
     let SpawnRate = 0;
     let Paused = [true, false, 0];
-    KeyboardInput(keyboard, Paused);
+    const BuyMenu = document.getElementById("BuyMenu");
+    let BuyMenuOpened = [false];
+    KeyboardInput(keyboard, Paused, BuyMenu, BuyMenuOpened);
+    let Count = 0;
+    let PrewCount = 0;
+    let ZombVal = 1;
     while (true) {
         UpdateBg();
         // console.log(Paused);
-
+        Count += RefreshRate / 1000 * GameSpeed;
+        if (Count > PrewCount + 60) {
+            SpawnAmount *= 2;
+            ZombVal *= 1.5;
+            console.log("D");
+            PrewCount = Count;
+        }
         if (SpawnRate <= 0) {
             let temp1 = Math.floor(-SpawnRate / SpawnRateMax);
             temp1 = (temp1 + 1) * SpawnAmount;
@@ -57,8 +68,7 @@ async function MainLoop() {
                         console.log(Math.floor(TempRandom * 4));
                         break;
                 }
-                // console.log(Grid);
-                let Enemy = new EnemyObj(XY[0],XY[1],SpriteSheet["Enemy1"], 10, "Green", 1, 0, RefreshRate/20, 1, 2, 1, Grid);
+                let Enemy = new EnemyObj(XY[0],XY[1],SpriteSheet["Enemy1"], 20, "Green", 1, 0, RefreshRate/20, 1, 2, ZombVal);
                 Enemies.push(Enemy);
             }
         } else {
@@ -66,7 +76,7 @@ async function MainLoop() {
         }
 
         for (i = 0; i < Enemies.length; i ++) {
-            if (Enemies[i].Tick(GameSpeed, RefreshRate, Player, Grid)) {
+            if (Enemies[i].Tick(GameSpeed, RefreshRate, Player, Bullets)) {
                 Enemies.splice(i,1);
             } else {
                 Enemies[i].GetShape(ctx);
@@ -83,6 +93,13 @@ async function MainLoop() {
         Player.GetShape(ctx);
         Player.Tick(GameSpeed, RefreshRate);
         PlayerUpdate(keyboard, Player, GameSpeed, Bullets);
+        if (Player.ExpGoal <= Player.Exp && !Paused[0]) {
+            Player.ExpGoal = Player.Exp + 1;
+            Player.AddStat(0, 0, -Player.Exp);
+            Paused[0] = true;
+            BuyMenuOpened[0] = true;
+            BuyMenu.classList.remove("Hidden");
+        }
         if (Paused[0]) {
             if (!Paused[1]){
                 Paused[2] = GameSpeed;
@@ -134,12 +151,12 @@ function PlayerUpdate(keyboard, Player, GameSpeed, Bullets) {
     if (keyboard[4]) {
         const BulletsShot = Player.Shoot()
         for (n = 0; n < BulletsShot; n ++) {
-            const Bullet = new BulletObj(Player.x, Player.y, Player.BulletSize, "yellow", Player.dir, Player.BulletSpeed, Player.Range, Player.Spread);
+            const Bullet = new BulletObj(Player.x, Player.y, Player.BulletSize, "yellow", Player.dir, Player.BulletSpeed, Player.Range, Player.Spread, Player.Dmg, Player.KnockBack);
             Bullets.push(Bullet);
         }
     }
 }
-function KeyboardInput(keyboard,Paused) {
+function KeyboardInput(keyboard, Paused, BuyMenu, BuyMenuOpened) {
     let KeyboardDebounce = [false];
     document.addEventListener('keydown', function (event) {
         if (event.key == "ArrowLeft") {
@@ -159,6 +176,9 @@ function KeyboardInput(keyboard,Paused) {
         }
         else if (event.key == "p") {
             if (!KeyboardDebounce[0]){
+                if (Paused[0] && BuyMenuOpened[0]) {
+                    BuyMenu.classList.add("Hidden");
+                }
                 Paused[0] = !Paused[0];
                 console.log(Paused);
                 KeyboardDebounce[0] = true;

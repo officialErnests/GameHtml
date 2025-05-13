@@ -13,22 +13,21 @@
     <div class="Main">
         <div class="Top">
             <h1>ZDays</h1>
-            <p>
+            <p id="Info">
                 Hp: 100/100<br>
-                Money: 1<br>
-                Exp: 0/100
+                Money: 0<br>
+                Exp: 0
             </p>
         </div>
         <div class="canvasHolder">
-            <div class="PopUp Hidden">
-                <div class="selector Hidden">
+            <div class="PopUp Hidden" id="BuyMenu">
+                <div class="selector ">
                     <h1>Choose ability:</h1>
                     <div class="cards">
-                        <div class="Card"></div>
-                        <div class="Card"></div>
-                        <div class="Card"></div>
                     </div>
                     <button>Reroll</button>
+                    <button>Heal full (1 hp = 1 Money)</button>
+                    <p>p - to close</p>
                 </div>
             </div>
             <canvas id="Canvas" width="1000" height="800"></canvas>

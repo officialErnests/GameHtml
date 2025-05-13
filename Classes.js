@@ -1,7 +1,5 @@
 let WeirdMode = false;
-const GridSize = 50;
-let Grid = new Array(Math.ceil(1000/GridSize)+1).fill().map(() => new Array(800/GridSize+1).fill([]));
-// console.log(Grid);
+const display = document.getElementById("Info");
 class Obj {
     constructor(XPos, YPos, Shape, Size, Color) {
         this.x = XPos;
@@ -77,7 +75,7 @@ class Entinty extends Obj {
     }
 }
 class PlayerObj extends Entinty {
-    constructor(XPos, YPos, Shape, Size, Color, Delay, BulletAmount, TurnSpeed, MoveSpeed, Dmg, Hp, BulletSpeed, BulletSize, Spread, Range, Money) {
+    constructor(XPos, YPos, Shape, Size, Color, Delay, BulletAmount, TurnSpeed, MoveSpeed, Dmg, Hp, BulletSpeed, BulletSize, Spread, Range, Money, KnockBack, ExpGoal) {
         super(XPos, YPos, Shape, Size, Color, TurnSpeed, MoveSpeed, Dmg, Hp);
         this.Delay = Delay;
         this.MaxDelay = Delay;
@@ -87,6 +85,10 @@ class PlayerObj extends Entinty {
         this.Range = Range;
         this.BulletAmount = BulletAmount;
         this.Money = Money;
+        this.KnockBack = KnockBack;
+        this.Exp = 0;
+        this.ExpGoal = ExpGoal
+        display.innerText = `Hp: ${this.Hp}/${this.MaxHp}\nMoney: ${this.Money}\nExp: ${this.Exp}/${this.ExpGoal}`;
     }
     Shoot() {
         if (this.Delay <= 0) {
@@ -104,9 +106,17 @@ class PlayerObj extends Entinty {
             this.Delay -= RefreshRate / 1000 * GameSpeed;
         }
     }
+    AddStat(Money, Hp, Exp) {
+        if(Money != 0){this.Money += Money;}
+        if(Hp != 0){this.Hp += Hp;}
+        if(Exp != 0){
+            this.Exp += Exp;
+        }
+        display.innerText = `Hp: ${this.Hp}/${this.MaxHp}\nMoney: ${this.Money}\nExp: ${this.Exp}/${this.ExpGoal}`;
+    }
 }
 class EnemyObj extends Entinty {
-    constructor(XPos, YPos, Shape, Size, Color, Delay, TurnSpeed, MoveSpeed, Dmg, Hp, Value, Grid) {
+    constructor(XPos, YPos, Shape, Size, Color, Delay, TurnSpeed, MoveSpeed, Dmg, Hp, Value) {
         super(XPos, YPos, Shape, Size, Color, TurnSpeed, MoveSpeed, Dmg, Hp);
         this.Delay = Delay;
         this.MaxDelay = Delay;
@@ -115,19 +125,11 @@ class EnemyObj extends Entinty {
         this.Dmg = Dmg;
         this.Hp = Hp;
         this.Value = Value;
-        // this.PrevGrid = [Math.floor(this.x / GridSize), Math.floor(this.y / GridSize)];
-        // console.log(Math.floor(this.x / GridSize));
-        // console.log(Grid[Math.floor(this.x / GridSize)]);
-        // console.log(Math.floor(this.y / GridSize));
-        // console.log(Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)])
-        // console.log(Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)]);
-        // Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)].push(this);
-        // console.log(Grid);
-        // console.log(Grid[Math.floor(this.x / GridSize)]);
-        
     }
-    Tick(GameSpeed, RefreshRate, Player, Grid) {
+    Tick(GameSpeed, RefreshRate, Player, Bullets) {
         if (this.Hp <= 0) {
+            bulet.Dmg = -this.Hp
+            Player.Money += this.Value
             return true;
         }
         if (this.Delay > 0) {
@@ -135,18 +137,28 @@ class EnemyObj extends Entinty {
         }
         if (Math.abs(this.x - Player.x) < this.Size + Player.Size && Math.abs(this.y - Player.y) < this.Size + Player.Size && this.Delay <= 0) {
             this.Delay = this.MaxDelay;
-            Player.Hp -= this.Dmg;
+            Player.AddStat(0, -this.Dmg, 0);
         }
         this.dir = Math.atan2((Player.x - this.x), (Player.y - this.y))
         this.x += Math.sin(this.dir) * this.MoveSpeed * GameSpeed;
         this.y += Math.cos(this.dir) * this.MoveSpeed * GameSpeed;
-        if (this.PrevGrid[0] != Math.floor(this.x / GridSize) || this.PrevGrid[1] != Math.floor(this.y / GridSize)) {
-            // console.log(`${this.PrevGrid[0]},${this.PrevGrid[1]} => ${Math.floor(this.x / GridSize)},${Math.floor(this.y / GridSize)}`);
-            console.log("A")
-            Grid[this.PrevGrid[0]][this.PrevGrid[1]].splice(Grid[this.PrevGrid[0]][this.PrevGrid[1]].indexOf(this), 1);
-            Grid[Math.floor(this.x / GridSize)][Math.floor(this.y / GridSize)].push(this);
-            this.PrevGrid[0] = Math.floor(this.x / GridSize);
-            this.PrevGrid[1] = Math.floor(this.y / GridSize);
+        for (const bulet of Bullets) {
+            if (Math.abs(bulet.x - this.x) < bulet.Radius + this.Size){
+                if (Math.abs(bulet.y - this.y) < bulet.Radius + this.Size){
+                    this.Hp -= bulet.Dmg;
+                    if (this.Hp <= 0) {
+                        bulet.Dmg = -this.Hp;
+                        Player.AddStat(this.Value, 0, this.Value);
+                        Player.Money += this.Value;
+                        return true;
+                    } else {
+                        bulet.Dmg = 0;
+                        this.x -= Math.sin(this.dir) * this.MoveSpeed * GameSpeed * bulet.KnockBack;
+                        this.y -= Math.cos(this.dir) * this.MoveSpeed * GameSpeed * bulet.KnockBack;
+                    }
+                    break;
+                }
+            }
         }
     }
 }
@@ -171,20 +183,21 @@ class CircleObj {
     }
 }
 class BulletObj extends CircleObj {
-    constructor(XPos, YPos, Radius, Color, Dir, Speed, Range, Spread) {
+    constructor(XPos, YPos, Radius, Color, Dir, Speed, Range, Spread, Dmg, KnockBack) {
         super(XPos, YPos, Radius, Color);
         this.Dir = Dir + Spread / 2 - Math.random() * Spread;
         this.Speed = Speed;
         this.Range = Range;
+        this.Dmg = Dmg;
+        this.KnockBack = KnockBack;
     }
     Tick(GameSpeed) {
-        if (this.Range <= 0) {
+        if (this.Range <= 0 | this.Dmg <= 0) {
             return true;
-        } else {
-            this.x += Math.sin(this.Dir) * this.Speed * GameSpeed;
-            this.y += Math.cos(this.Dir) * this.Speed * GameSpeed;
-            this.Range -= this.Speed * GameSpeed;
-            return false;
         }
+        this.x += Math.sin(this.Dir) * this.Speed * GameSpeed;
+        this.y += Math.cos(this.Dir) * this.Speed * GameSpeed;
+        this.Range -= this.Speed * GameSpeed;
+        return false;
     }
 }
