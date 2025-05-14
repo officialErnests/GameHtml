@@ -40,7 +40,7 @@ body .Main .Top h1 {
   font-weight: 400;
   font-style: normal;
   font-size: 5rem;
-  margin: 10px 0 10px;
+  margin: 0;
 }
 body .Main .canvasHolder {
   position: relative;
@@ -63,8 +63,9 @@ body .Main .canvasHolder .PopUp .selector {
 }
 body .Main .canvasHolder .PopUp .cards {
   background-color: rgba(0, 0, 0, 0.2666666667);
-  width: 700px;
-  height: 400px;
+  width: 760px;
+  height: 640px;
+  padding: 20px;
   overflow-y: scroll;
   flex-direction: row;
   display: flex;
@@ -75,7 +76,13 @@ body .Main .canvasHolder .PopUp .cards {
 body .Main .canvasHolder .PopUp .cards .Card {
   background-color: black;
   width: 200px;
-  height: 300px;
+  height: -moz-fit-content;
+  height: fit-content;
+  padding: 10px;
+}
+body .Main .canvasHolder .PopUp .cards .Card h2 {
+  color: gray;
+  font-size: small;
 }
 body .Main .canvasHolder canvas {
   width: 1000px;
@@ -86,4 +93,28 @@ body .Main .Bottom {
   width: 90%;
   display: flex;
   flex-direction: column;
+}
+body .Main .cardHolder {
+  display: flex;
+  width: 90%;
+  height: 700px;
+  flex-shrink: 0;
+  background-color: rgb(118, 151, 117);
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+body .Main .cardHolder div {
+  background-color: black;
+  width: 200px;
+  height: -moz-fit-content;
+  height: fit-content;
+  padding: 10px;
+}
+body .Main .cardHolder div h2 {
+  color: gray;
+  font-size: small;
 }/*# sourceMappingURL=style.css.map */

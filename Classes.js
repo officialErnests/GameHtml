@@ -1,5 +1,7 @@
 let WeirdMode = false;
 const display = document.getElementById("Info");
+const PlayerStatsHTML =  document.getElementById("PlayerStats")
+const CardHolding_YES = document.getElementById("CardHolding_YES")
 class Obj {
     constructor(XPos, YPos, Shape, Size, Color) {
         this.x = XPos;
@@ -113,6 +115,21 @@ class PlayerObj extends Entinty {
             this.Exp += Exp;
         }
         display.innerText = `Hp: ${this.Hp}/${this.MaxHp}\nMoney: ${this.Money}\nExp: ${this.Exp}/${this.ExpGoal}`;
+    }
+    UpdateStats(EnemyStats, CardDrops){
+        let CombinedString = "";
+        for (let n = 4; n < StatAligmentKeys.length; n++){
+            if (StatAligmentKeys[n].charAt(0) == "P") {
+                CombinedString += `${StatAligmentKeys[n]} = ${Player[StatAligmentKeys[n].substring(2)]}<br>`;
+            } else if (StatAligmentKeys[n].charAt(0) == "E") {
+                CombinedString += `${StatAligmentKeys[n]} = ${EnemyStats[StatAligmentKeys[n].substring(2)]}<br>`;
+            } else if (StatAligmentKeys[n].charAt(0) == "W") {
+                CombinedString += `${StatAligmentKeys[n]} = ${CardDrops}<br>`;
+            } else {
+                console.warn(`What is ${StatAligmentKeys[n].charAt(0)}`);                                
+            }
+        }
+        PlayerStatsHTML.innerHTML = CombinedString;
     }
 }
 class EnemyObj extends Entinty {
