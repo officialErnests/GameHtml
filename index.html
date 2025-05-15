@@ -26,7 +26,7 @@
                     <div class="cards" id="CardClass">
                     </div>
                     <button id="RerollCards">Reroll</button>
-                    <button>Heal full (1 hp = 1 Money)</button>
+                    <button onclick="HealMax();">Heal full (1 hp = 1 Money)</button>
                     <p>p - to close</p>
                 </div>
             </div>
@@ -48,9 +48,9 @@
                 Weird mode
             </span>
             <span>
-                <button onclick="CustomModule">Apply</button>
-                <input type="input" id="CustomName" name="Weird mode">
-                <input type="input" id="CustomModel" name="Weird mode">
+                <button onclick="CustomModule()">Apply</button>
+                <select name="SkinClasses" id="CustomName" onchange="updateRight()"></select>
+                <textarea class="inputCla" type="text" id="CustomModel" name="Weird mode"></textarea>
                 Custom models
             </span>
             <p id="PlayerStats"></p>

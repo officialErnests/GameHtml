@@ -7,15 +7,16 @@ class Obj {
         this.x = XPos;
         this.y = YPos;
         this.dir = 0;
-        this.Shape = [[]];
+        this.Shape = [];
         this.Size = Size;
         this.Color = Color;
-        for (const n of Shape) {
+        this.ShapeText = Shape
+        for (const n of SpriteSheet[this.ShapeText]) {
             this.Shape.push(n);
         }
     }
     GetShape(ctx) {
-        // console.log("A");
+        // console.log(this);
         let generated_shape = new Path2D;
         for (var i = 0; i < this.Shape.length; i++) {
             let Temp2;
@@ -34,6 +35,13 @@ class Obj {
         ctx.fillStyle = this.Color;
         // console.log(this.Color);
         ctx.fill(generated_shape);
+    }
+    UpdateShape() {
+        this.Shape = [];
+        for (const n of SpriteSheet[this.ShapeText]) {
+            this.Shape.push(n);
+        }
+        // console.log(this.Shape);
     }
 }
 class Entinty extends Obj {

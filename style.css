@@ -94,6 +94,9 @@ body .Main .Bottom {
   display: flex;
   flex-direction: column;
 }
+body .Main .Bottom .inputCla {
+  width: auto;
+}
 body .Main .cardHolder {
   display: flex;
   width: 90%;
