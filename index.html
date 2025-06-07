@@ -12,6 +12,10 @@
 <body>
     <div class="Main">
         <div class="Top">
+            <span>
+                <button onclick="audioToggle()">Audio</button>
+                <button onclick="sfxToggle()">sfx</button>
+            </span>
             <h1>ZDays</h1>
             <p id="Info">
                 Hp: 100/100<br>
@@ -26,9 +30,13 @@
                     <div class="cards" id="CardClass">
                     </div>
                     <button id="RerollCards">Reroll</button>
-                    <button onclick="HealMax();">Heal full (1 hp = 1 Money)</button>
+                    <button onclick="HealMax();" id="Healer">Heal full (1 hp = 2% money)</button>
                     <p>p - to close</p>
                 </div>
+            </div>
+            <div class="Dead Hidden" id="DeathScreen">
+                <p>You died</p>
+                <p id="DeathScreenTxt">Time survived: 0</p>
             </div>
             <canvas id="Canvas" width="1000" height="800"></canvas>
         </div>

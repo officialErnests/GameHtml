@@ -2,6 +2,8 @@ let WeirdMode = false;
 const display = document.getElementById("Info");
 const PlayerStatsHTML =  document.getElementById("PlayerStats")
 const CardHolding_YES = document.getElementById("CardHolding_YES")
+let LVLUp = false
+
 class Obj {
     constructor(XPos, YPos, Shape, Size, Color) {
         this.x = XPos;
@@ -114,6 +116,8 @@ class PlayerObj extends Entinty {
     Tick(GameSpeed, RefreshRate) {
         if (this.Delay > 0) {
             this.Delay -= RefreshRate / 1000 * GameSpeed;
+            // console.log(this.Delay);
+            
         }
     }
     AddStat(Money, Hp, Exp) {
@@ -122,17 +126,20 @@ class PlayerObj extends Entinty {
         if(Exp != 0){
             this.Exp += Exp;
         }
-        display.innerText = `Hp: ${this.Hp}/${this.MaxHp}\nMoney: ${this.Money}\nExp: ${this.Exp}/${this.ExpGoal}`;
+        display.innerText = `Hp: ${Math.floor(this.Hp*100)/100}/${Math.floor(this.MaxHp*100)/100}\nMoney: ${Math.floor(this.Money*100)/100}\nExp: ${Math.floor(this.Exp*100)/100}/${Math.floor(this.ExpGoal*100)/100}`;
     }
     UpdateStats(EnemyStats, CardDrops){
         let CombinedString = "";
         for (let n = 4; n < StatAligmentKeys.length; n++){
             if (StatAligmentKeys[n].charAt(0) == "P") {
-                CombinedString += `${StatAligmentKeys[n]} = ${Player[StatAligmentKeys[n].substring(2)]}<br>`;
+                CombinedString += `${StatAligmentKeys[n]} = ${Math.round(Player[StatAligmentKeys[n].substring(2)]*100)/100}<br>`;
             } else if (StatAligmentKeys[n].charAt(0) == "E") {
-                CombinedString += `${StatAligmentKeys[n]} = ${EnemyStats[StatAligmentKeys[n].substring(2)]}<br>`;
+                // console.log(StatAligmentKeys[n].substring(2),EnemyStats[StatAligmentKeys[n].substring(2)]*100,Math.round(EnemyStats[StatAligmentKeys[n].substring(2)]*100)/100);
+                
+                
+                CombinedString += `${StatAligmentKeys[n]} = ${Math.round(EnemyStats[StatAligmentKeys[n].substring(2)]*100)/100}<br>`;
             } else if (StatAligmentKeys[n].charAt(0) == "W") {
-                CombinedString += `${StatAligmentKeys[n]} = ${CardDrops}<br>`;
+                CombinedString += `${StatAligmentKeys[n]} = ${Math.round(CardDrops,2)}<br>`;
             } else {
                 console.warn(`What is ${StatAligmentKeys[n].charAt(0)}`);                                
             }
@@ -171,6 +178,7 @@ class EnemyObj extends Entinty {
             if (Math.abs(bulet.x - this.x) < bulet.Radius + this.Size){
                 if (Math.abs(bulet.y - this.y) < bulet.Radius + this.Size){
                     this.Hp -= bulet.Dmg;
+                    PlayRandomSfx();
                     if (this.Hp <= 0) {
                         bulet.Dmg = -this.Hp;
                         Player.AddStat(this.Value, 0, this.Value);
